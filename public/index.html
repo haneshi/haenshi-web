@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/956f1e2e20.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="mainContainer">
+
+        <header class="page-header" id="home-header">
+            <h1>Haneshi Web</h1>
+        </header>
+
+        <header class="page-header" id="about-header">
+            <h1>About Us</h1>
+        </header>
+
+        <header class="page-header" id="contact-header">
+            <h1>Contact Us</h1>
+        </header>
+
+        <header class="page-header" id="login-header">
+            <h1>Login</h1>
+        </header>
+
+        <header class="page-header" id="signUp-header">
+            <div class="backBtn_box">
+                <div class="back_button">
+                    <i class="fa-solid fa-angle-left"></i>
+                </div>
+            </div>
+            <h1>signUp Header</h1>
+        </header>
+
+        <div class="page" id="home">
+            <h1>Home Page</h1>
+            <p>Welcome to the home page!</p>
+        </div>
+
+        <div class="page" id="about">
+            <h1>About Page</h1>
+            <p>Learn more about us on this page.</p>
+        </div>
+
+        <div class="page" id="contact">
+            <h1>Contact Page</h1>
+            <p>Get in touch with us here.</p>
+        </div>
+
+        <header class="page-header" id="guestRoom-header">
+            <h1>Guest Room</h1>
+        </header>
+
+        <div class="page" id="login">
+            <div class="loginContainer">
+                <h2>LOGIN</h2>
+                <form id="loginForm">
+                    <div class="loginFormGroup">
+                        <label for="userEmail">email</label>
+                        <input type="text" id="userEmail" name="userEmail" required>
+                    </div>
+                    <div class="loginFormGroup">
+                        <label for="password">Password</label>
+                        <input type="password" id="userPw" name="password" required>
+                    </div>
+                    <button type="submit" id="loginBtn">Login</button>
+                </form>
+
+                <div class="goToSignUpPage">
+                    <span><a href="signUp" data-link="signUp">Create an Account</a></span>
+                    <span><a href="signUp" data-link="signUp">회원가입 하러가기</a></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="page dPage" id="signUp">
+            <div class="signUpContainer">
+                <h2>회원가입</h2>
+                <form id="signUpForm">
+                    <div class="signUpFormGroup">
+                        <label for="name">이름:</label>
+                        <input type="text" id="signUp_name" name="name" placeholder="이름은 2자 이상 입력하세요" required>
+                    </div>
+                    <div class="signUpFormGroup">
+                        <label for="email">이메일:</label>
+                        <input type="text" id="signUp_email" name="email" placeholder="이메일 형식을 맞춰주세요" required>
+                    </div>
+                    <div class="signUpFormGroup">
+                        <label for="nickName">닉네임:</label>
+                        <input type="text" id="signUp_nickName" name="nickName" placeholder="닉네임 3자 이상 입력하세요" required>
+                    </div>
+                    <div class="signUpFormGroup">
+                        <label for="password">비밀번호:</label>
+                        <input type="password" id="signUp_password" name="password" placeholder="비밀번호는 7자 이상 입력하세요" required>
+                    </div>
+                    <div class="signUpFormGroup">
+                        <label for="password_check">비밀번호 확인:</label>
+                        <input type="password" id="signUp_password_check" name="password_check" placeholder="비밀번호를 다시 입력하세요" required>
+                    </div>
+                    <button type="submit" id="signUpBtn">회원가입</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="page" id="guestRoom">
+            <h1>guestRoom Page</h1>
+        </div>
+
+        <nav>
+            <a href="/about" data-link="about">About</a>
+            <a href="/contact" data-link="contact">Contact</a>
+            <a href="/home" data-link="home">Home</a>
+            <a href="/login" data-link="login">login</a>
+            <a href="/guestRoom" data-link="guestRoom">guest room</a>
+        </nav>
+    </div>
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/view.js"></script>
+</body>
+
+</html>

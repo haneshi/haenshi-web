@@ -1,0 +1,302 @@
+@import "reset.css";
+
+/* .nanum-myeongjo-regular {
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: 400;
+    font-style: normal;
+} */
+
+body {
+    font-family: "Nanum Myeongjo", serif;
+}
+
+.mainContainer {
+    max-width: 430px;
+    margin: auto;
+}
+
+.page {
+    display: none;
+    height: 100vh;
+
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #427D9D;
+    padding: 30px;
+    box-sizing: border-box;
+    border-radius: 0 0 15px 15px;
+    color: #fff;
+}
+
+header h1 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+}
+
+nav {
+    max-width: 430px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #164863;
+    border-radius: 15px 15px 0 0;
+}
+
+nav a {
+    color: #9BBEC8;
+}
+
+.backBtn_box {
+    font-size: 25px;
+}
+
+#logoutButton {
+    all: unset;
+    position: absolute;
+    right: 15px;
+}
+
+#logoutButton i {
+    font-size: 18px;
+    color: #9BBEC8;
+}
+
+#logoutButton span {
+    font-size: 13px;
+    color: #9BBEC8;
+}
+
+/* ===========================================================================home Page==================================================================================== */
+
+/* ===========================================================================Contact Page==================================================================================== */
+
+/* ===========================================================================login Page==================================================================================== */
+
+#login-header {
+    align-items: center;
+    justify-content: center;
+}
+
+.loginContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.loginContainer h2 {
+    font-size: 25px;
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: bold;
+    font-style: normal;
+}
+
+#loginForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 40px 0 40px;
+    box-sizing: border-box;
+}
+
+.loginFormGroup {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.loginFormGroup label {
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.loginFormGroup input{
+    font-family: "Nanum Myeongjo", serif;
+    text-align: right;
+    width: 70%;
+    max-width: 70%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.loginFormGroup input[type="text"]:focus,
+input[type="password"]:focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px #135D66;
+    outline: none;
+}
+
+#loginBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #164863;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+
+#loginBtn:hover {
+    background-color: #164863;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+#loginBtn:active {
+    background-color: #164863;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.goToSignUpPage {
+    width: 100%;
+    text-align: right;
+    padding: 20px 40px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.goToSignUpPage a {
+    text-decoration: none;
+    color: #164863;
+    font-size: 13px;
+}
+
+
+
+
+
+
+/* ===========================================================================signUP Page==================================================================================== */
+
+#signUp-header {
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+#signUp-header h1 {
+    margin: auto;
+}
+
+.signUpContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+#signUpForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.signUpFormGroup {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.signUpFormGroup label {
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.signUpFormGroup input {
+    font-family: "Nanum Myeongjo", serif;
+    text-align: right;
+    width: 60%;
+    max-width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.signUpFormGroup input[type="text"]:focus,
+input[type="password"]:focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px #135D66;
+    outline: none;
+}
+
+.signUpFormGroup input::placeholder {
+    font-size: 10px;
+}
+
+#signUpBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #164863;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#signUpBtn:hover {
+    background-color: #164863;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#signUpBtn:active {
+    background-color: #164863;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ===========================================================================home Page==================================================================================== */
