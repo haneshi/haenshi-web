@@ -16,7 +16,7 @@
     <div class="mainContainer">
 
         <header class="page-header" id="home-header">
-            <h1>Haneshi Web</h1>
+            <h1>Home header</h1>
         </header>
 
         <header class="page-header" id="about-header">
@@ -40,6 +40,19 @@
             <h1>signUp Header</h1>
         </header>
 
+        <header class="page-header" id="guestRoom-header">
+            <h1>Guest Room</h1>
+        </header>
+
+        <header class="page-header" id="postWrite-header">
+            <div class="backBtn_box">
+                <div class="back_button">
+                    <i class="fa-solid fa-angle-left"></i>
+                </div>
+            </div>
+            <h1>게시글 작성 헤더</h1>
+        </header>
+
         <div class="page" id="home">
             <h1>Home Page</h1>
             <p>Welcome to the home page!</p>
@@ -54,10 +67,6 @@
             <h1>Contact Page</h1>
             <p>Get in touch with us here.</p>
         </div>
-
-        <header class="page-header" id="guestRoom-header">
-            <h1>Guest Room</h1>
-        </header>
 
         <div class="page" id="login">
             <div class="loginContainer">
@@ -99,11 +108,13 @@
                     </div>
                     <div class="signUpFormGroup">
                         <label for="password">비밀번호:</label>
-                        <input type="password" id="signUp_password" name="password" placeholder="비밀번호는 7자 이상 입력하세요" required>
+                        <input type="password" id="signUp_password" name="password" placeholder="비밀번호는 7자 이상 입력하세요"
+                            required>
                     </div>
                     <div class="signUpFormGroup">
                         <label for="password_check">비밀번호 확인:</label>
-                        <input type="password" id="signUp_password_check" name="password_check" placeholder="비밀번호를 다시 입력하세요" required>
+                        <input type="password" id="signUp_password_check" name="password_check"
+                            placeholder="비밀번호를 다시 입력하세요" required>
                     </div>
                     <button type="submit" id="signUpBtn">회원가입</button>
                 </form>
@@ -111,7 +122,47 @@
         </div>
 
         <div class="page" id="guestRoom">
-            <h1>guestRoom Page</h1>
+            <div class="guestRoomContainer">
+                <div class="post_search">
+                    <div class="post_search_wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="postSearchInput" placeholder="제목 검색">
+                    </div>
+                    <button id="postSearchButton">검색</button>
+                </div>
+                <div class="post_top">
+                    <h2>게시판(방명록)</h2> <button><a href="postWrite" data-link="postWrite">게시글 작성</a></button>
+                </div>
+                <div class="postList">
+                    <!-- <div class="postItem">
+                        <h3 class="postTitle">게시글 제목 1000</h3>
+                        <p class="postDate">2024-08-27</p>
+                    </div> 이런 구조의 게시글 목록 -->
+                </div>
+                <div class="pagination">
+                    <button id="postsPrevPageButton"><i class="fa-solid fa-angle-left"></i></button>
+                    <span id="postsCurrentPageIndicator">1</span>
+                    <button id="postsNextPageButton"><i class="fa-solid fa-angle-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page dPage" id="postWrite">
+            <div class="postWriteContainer">
+                <h2>게시글 작성</h2>
+                <form id="postWriteForm">
+                    <div class="post-form-group">
+                        <input type="text" id="postTitle" placeholder="제목을 입력하세요" required>
+                    </div>
+                    <div class="post-form-group">
+                        <input type="password" id="postPassword" maxlength="4" placeholder="비밀번호" required>
+                    </div>
+                    <div class="post-form-group">
+                        <textarea id="postContent" rows="10" placeholder="내용을 입력하세요" required></textarea>
+                    </div>
+                    <button type="submit">작성하기</button>
+                </form>
+            </div>
         </div>
 
         <nav>

@@ -13,12 +13,15 @@ body {
 .mainContainer {
     max-width: 430px;
     margin: auto;
+    background-color: #134B70;
 }
 
 .page {
     display: none;
     height: 100vh;
-
+    height: calc(var(--vh, 1vh) * 100);
+    padding: 25px 15px;
+    padding-bottom: 60px;
 }
 
 .page.active {
@@ -27,10 +30,9 @@ body {
 }
 
 header {
-    width: 100;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
     position: relative;
     background-color: #427D9D;
     padding: 30px;
@@ -46,6 +48,11 @@ header h1 {
     font-size: 24px;
 }
 
+#signUp-header,
+#postWrite-header {
+    padding: 20px;
+}
+
 nav {
     max-width: 430px;
     width: 100%;
@@ -55,7 +62,7 @@ nav {
     justify-content: space-between;
     padding: 20px;
     box-sizing: border-box;
-    background-color: #164863;
+    background-color: #427D9D;
     border-radius: 15px 15px 0 0;
 }
 
@@ -96,13 +103,15 @@ nav a {
 
 .loginContainer {
     width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 0 15px;
+    gap: 15px;
+    padding: 20px 15px 20px;
     box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .loginContainer h2 {
@@ -204,26 +213,19 @@ input[type="password"]:focus {
 
 
 
-/* ===========================================================================signUP Page==================================================================================== */
-
-#signUp-header {
-    justify-content: flex-start;
-    padding: 20px;
-}
-
-#signUp-header h1 {
-    margin: auto;
-}
+/* ===========================================================================signUp Page==================================================================================== */
 
 .signUpContainer {
     width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 0 15px;
+    gap: 15px;
+    padding: 20px 15px 20px;
     box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 #signUpForm {
@@ -299,4 +301,207 @@ input[type="password"]:focus {
     box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* ===========================================================================home Page==================================================================================== */
+/* ===========================================================================guestRoom Page==================================================================================== */
+
+.guestRoomContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.post_search {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.post_search_wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: white;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+
+.post_search_wrapper i {
+    padding: 10px;
+    font-size: 16px;
+    color: #aaa;
+}
+
+.post_search_wrapper input {
+    width: 80%;
+    font-family: "Nanum Myeongjo", serif;
+    font-size: 13px;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+}
+
+.post_search button {
+    height: 70%;
+    font-size: 13px;
+    margin-left: 10px;
+    border-radius: 10px;
+    background-color: #427D9D;
+    color: white;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.post_search button:hover {
+    background-color: #0056b3;
+}
+
+.post_top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post_top button {
+    all: unset;
+    background-color: #427D9D;
+    padding: 5px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.post_top>button>a {
+    display: block;
+    color: #fff;
+    font-size: 13px;
+} 
+
+.postList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.postItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #508C9B;
+    border-radius: 15px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.postTitle {
+    font-size: 18px;
+    color: #DDF2FD;
+}
+
+.postDate {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.pagination button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: none;
+    color: #164863;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 19px;
+}
+
+/* ===========================================================================postWrite Page==================================================================================== */
+
+.postWriteContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#postWriteForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.post-form-group input[type="text"],
+.post-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: bold;
+}
+
+#postPassword {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-family: "Nanum Myeongjo", serif;
+}
+
+#postWriteForm button {
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 20px;
+    border: none;
+    background-color: #9BBEC8;
+    color: #fff;
+    border-radius: 25px;
+}
+
+.pagination {
+    width: 150px;
+    display: flex;
+    justify-content: center; /* 모든 요소를 중앙에 배치 */
+    align-items: center; /* 수직 정렬 */
+    position: relative; /* 부모를 기준으로 자식 요소 배치 */
+}
+
+#postsCurrentPageIndicator {
+    position: absolute; /* 절대 위치로 중앙에 배치 */
+    left: 50%; /* 부모의 정중앙에 위치 */
+    transform: translateX(-50%); /* 자신의 크기만큼 왼쪽으로 이동하여 정확히 중앙에 배치 */
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+#postsPrevPageButton {
+    margin-right: auto; /* 왼쪽 끝으로 배치 */
+}
+
+#postsNextPageButton {
+    margin-left: auto; /* 오른쪽 끝으로 배치 */
+}
+
