@@ -45,12 +45,7 @@ header h1 {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 24px;
-}
-
-#signUp-header,
-#postWrite-header {
-    padding: 20px;
+    font-size: 22px;
 }
 
 nav {
@@ -71,6 +66,7 @@ nav a {
 }
 
 .backBtn_box {
+    position: absolute;
     font-size: 25px;
 }
 
@@ -503,5 +499,88 @@ input[type="password"]:focus {
 
 #postsNextPageButton {
     margin-left: auto; /* 오른쪽 끝으로 배치 */
+}
+
+/* ===========================================================================postWrite Page==================================================================================== */
+
+.postDetailContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 0px 20px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#postDetailWrapper {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background-color: #508C9B;
+    border-radius: 15px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#postDetailWrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#postDetailHeaderWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#postDetailTitleText {
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 22px;
+    color: #000;
+}   
+
+#postMetaWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+#postMetaWrapper span {
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+#postAuthorText {
+    color: #888;
+}
+
+#postAuthorText strong {
+    color: #134B70;
+}
+
+#postDateText {
+    color: #888;
+}
+
+#postContentWrapper {
+    min-height: 250px;
+    background-color: #fff;
+    font-size: 16px;
+    padding: 20px 10px;
+    border-radius: 10px;
+    line-height: 1.6;
+    color: #000;
+    margin-top: 20px;
 }
 

@@ -15,87 +15,147 @@ function initializeApp() {
     initPageNavigation();  // 페이지 네비게이션 초기화
     initPostManagement();  // 게시글 관리 초기화
     initSearchFeature();   // 게시글 검색 기능 초기화
-    initPagination();      // 페이지네이션 초기화
+    const paginator = initPagination(); // 페이지네이션 초기화
+    paginator.init(); // 페이지네이션 시작
     initAuthForms();       // 로그인 및 회원가입 폼 초기화
+    initAuthStateHandling(); // 인증 상태 관리 초기화
 }
 
-// 전역에 정의된 함수들
-function showPage(pageId) {
+// 페이지 전환 처리 함수
+function showPage(pageId, data = null) {
     const pages = document.querySelectorAll('.page');
     const headers = document.querySelectorAll('.page-header');
     const navbar = document.querySelector('nav');
 
-    pages.forEach(page => {
-        page.classList.remove('active');
-        page.style.display = 'none';
-    });
+    // 현재 사용자 인증 상태 확인
+    const user = auth.currentUser;
 
-    headers.forEach(header => {
-        header.classList.remove('active');
-        header.style.display = 'none';
-    });
+    // 비회원이 접근할 수 없는 페이지 처리
+    const restrictedPages = ['postWrite', 'postDetail'];
+    if (!user && restrictedPages.includes(pageId)) {
+        alert('이 페이지는 회원만 접근할 수 있습니다.');
+        return showPage('login'); // 비회원은 로그인 페이지로 리다이렉트
+    }
+
+    updatePreviousPages(pageId);
+
+    hideAllElements(pages);
+    hideAllElements(headers);
 
     const activePage = document.getElementById(pageId);
     const activeHeader = document.getElementById(pageId + '-header');
 
     if (activePage) {
-        activePage.style.display = 'flex';
-        activePage.classList.add('active');
+        activateElement(activePage, 'flex');
+        // 데이터가 전달되었고, 현재 페이지가 postDetail일 경우 처리
+        if (pageId === 'postDetail' && data && data.id) {
+            loadPostDetail(data.id);  // 게시글 ID로 상세 정보 로드
+        }
     }
     if (activeHeader) {
-        activeHeader.style.display = 'flex';
-        activeHeader.classList.add('active');
-        handleAuthState(activeHeader, document.querySelector('nav a[data-link="login"]'));
+        activateElement(activeHeader, 'flex');
     }
 
     // 네비게이션 바 제어
     navbar.style.display = activePage && activePage.classList.contains('dPage') ? 'none' : 'flex';
 }
 
-function handleAuthState(activeHeader, navLoginLink) {
+// 이전 페이지를 스택에 추가하는 함수
+function updatePreviousPages(pageId) {
+    const currentPage = document.querySelector('.page.active');
+    if (currentPage && currentPage.id !== pageId) {
+        previousPages.push(currentPage.id);
+        console.log(`Page added to stack: ${currentPage.id}`);
+    }
+}
+
+// 모든 요소를 숨기는 함수
+function hideAllElements(elements) {
+    elements.forEach(element => {
+        element.classList.remove('active');
+        element.style.display = 'none';
+    });
+}
+
+// 특정 요소를 활성화하는 함수
+function activateElement(element, displayStyle = 'block') {
+    element.style.display = displayStyle;
+    element.classList.add('active');
+}
+
+// 인증 상태 처리 함수
+function initAuthStateHandling() {
+    const headers = document.querySelectorAll('.page-header');
+    const navLoginLink = document.querySelector('nav a[data-link="login"]');
+
     onAuthStateChanged(auth, (user) => {
+        console.log('Auth state changed:', user); // 인증 상태가 변경될 때마다 로그 출력
+
         if (user) {
-            navLoginLink && (navLoginLink.style.display = 'none');
-
-            if (!activeHeader.querySelector('#logoutButton')) {
-                const logoutButton = document.createElement('button');
-                logoutButton.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>';
-                logoutButton.id = 'logoutButton';
-                activeHeader.appendChild(logoutButton);
-
-                logoutButton.addEventListener('click', async () => {
-                    try {
-                        await signOut(auth);
-                        alert('로그아웃 되었습니다.');
-                        window.location.reload();
-                    } catch (error) {
-                        console.error('로그아웃 실패:', error);
-                        alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
-                    }
-                });
+            console.log('User is logged in');
+            if (navLoginLink) {
+                navLoginLink.style.display = 'none'; // 로그인 상태라면 로그인 링크 숨기기
             }
+
+            headers.forEach(header => {
+                if (!header.querySelector('#logoutButton')) {
+                    createLogoutButton(header);
+                }
+            });
         } else {
-            navLoginLink && (navLoginLink.style.display = 'block');
+            console.log('User is logged out');
+            if (navLoginLink) {
+                navLoginLink.style.display = 'block'; // 로그아웃 상태라면 로그인 링크 보이기
+            }
+
+            headers.forEach(header => {
+                removeLogoutButton(header);
+            });
         }
     });
 }
 
+// 로그아웃 버튼 생성 함수
+function createLogoutButton(header) {
+    const logoutButton = document.createElement('button');
+    logoutButton.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>';
+    logoutButton.id = 'logoutButton';
+    header.appendChild(logoutButton);
+
+    logoutButton.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            alert('로그아웃 되었습니다.');
+            showPage('login'); // 로그아웃 후 login 페이지로 이동
+        } catch (error) {
+            console.error('로그아웃 실패:', error);
+            alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+        }
+    });
+}
+
+// 로그아웃 버튼 제거 함수
+function removeLogoutButton(header) {
+    const logoutButton = header.querySelector('#logoutButton');
+    if (logoutButton) {
+        logoutButton.remove(); // 로그아웃 상태라면 기존 로그아웃 버튼 제거
+    }
+}
+
+// 링크 클릭 처리 함수
 function handlePageLinkClick(e) {
     e.preventDefault();
     const targetPage = e.target.closest('a').getAttribute('data-link');
-    const currentPage = document.querySelector('.page.active');
-    if (currentPage && currentPage.id !== targetPage) {
-        previousPages.push(currentPage.id);
-    }
     showPage(targetPage);
 }
 
+// 백버튼 처리 함수
 function handleBackButtonClick() {
     if (previousPages.length > 0) {
         const previousPage = previousPages.pop();
         showPage(previousPage);
     } else {
-        console.log('No previous pages in history.');
+        showPage('home'); // 스택이 비어있을 경우 기본 페이지로 이동
     }
 }
 
@@ -112,14 +172,24 @@ function initPageNavigation() {
         link.addEventListener('click', handlePageLinkClick);
     });
 
+    // 백버튼 클릭 시 이전 페이지로 이동 처리
     backButton.forEach(button => {
         button.addEventListener('click', handleBackButtonClick);
     });
 }
 
-// 회원가입 폼 초기화 함수
+// 로그인 및 회원가입 폼 초기화 함수
 function initAuthForms() {
-    document.getElementById('signUpForm').addEventListener('submit', handleSignUpFormSubmit);
+    const signUpForm = document.getElementById('signUpForm');
+    const loginForm = document.getElementById('loginForm');
+
+    if (signUpForm) {
+        signUpForm.addEventListener('submit', handleSignUpFormSubmit);
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLoginFormSubmit);
+    }
 }
 
 // 회원가입 폼 제출 처리 함수
@@ -140,7 +210,7 @@ async function handleSignUpFormSubmit(event) {
 
     // Firebase Auth로 회원가입 처리 및 Firestore에 사용자 정보 저장
     try {
-        // 사용자 계정 생성 (로그인 처리 없이 사용자 계정만 생성)
+        // 사용자 계정 생성
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
@@ -153,7 +223,7 @@ async function handleSignUpFormSubmit(event) {
         });
 
         alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
-        showPage('home'); // 회원가입 후 로그인 페이지로 리다이렉션
+        showPage('home'); // 회원가입 후 홈 페이지로 이동
     } catch (error) {
         console.error('회원가입 실패:', error.code, error.message);
         alert('회원가입에 실패했습니다: ' + error.message);
@@ -209,7 +279,7 @@ async function handleLoginFormSubmit(event) {
         const user = userCredential.user;
 
         alert('로그인 성공!');
-        window.location.href = 'index.html'; // 로그인 후 이동할 페이지
+        showPage('home'); // 로그인 후 홈 페이지로 이동
 
     } catch (error) {
         console.error('로그인 실패:', error.code, error.message);
@@ -219,16 +289,20 @@ async function handleLoginFormSubmit(event) {
 
 // 게시글 검색 기능에 관한 스크립트
 function initSearchFeature() {
-    document.getElementById('postSearchButton').addEventListener('click', function () {
-        const searchQuery = document.getElementById('postSearchInput').value.trim().toLowerCase();
-        filterPosts(searchQuery);
-    });
+    const searchButton = document.getElementById('postSearchButton');
+    const searchInput = document.getElementById('postSearchInput');
 
-    document.getElementById('postSearchInput').addEventListener('keyup', function (event) {
-        const searchQuery = document.getElementById('postSearchInput').value.trim().toLowerCase();
-        filterPosts(searchQuery);
-    });
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', () => {
+            filterPosts(searchInput.value.trim().toLowerCase());
+        });
+
+        searchInput.addEventListener('keyup', () => {
+            filterPosts(searchInput.value.trim().toLowerCase());
+        });
+    }
 }
+
 function filterPosts(query) {
     const postItems = document.querySelectorAll('.postItem');
     postItems.forEach(item => {
@@ -242,169 +316,163 @@ function filterPosts(query) {
     });
 }
 
+// 게시글 항목을 생성하는 공통 함수
+function createPostItem(post) {
+    const postItem = document.createElement('div');
+    postItem.classList.add('postItem');
+    postItem.innerHTML = `
+        <h3 class="postTitle">${post.title}</h3>
+        <p class="postDate">${post.date}</p>
+    `;
+
+    // 게시글 클릭 시 상세보기 페이지로 이동
+    postItem.addEventListener('click', () => {
+        showPage('postDetail', { id: post.id }); // postDetail 페이지로 이동하면서 게시글 ID를 전달
+    });
+
+    return postItem;
+}
+
 // 게시글 페이지네이션 스크립트
 function initPagination() {
     const postsPerPage = 7;
+    let allPosts = []; // 전체 게시글 데이터를 저장할 변수
 
-    // Firebase Firestore에서 게시글을 불러와 페이지네이션 처리
-    async function fetchPosts() {
-        // Firestore에서 createdAt 필드를 기준으로 최신순으로 정렬하여 가져옴
-        const querySnapshot = await getDocs(query(collection(db, 'guestRoomPosts'), orderBy('createdAt', 'desc')));
-        const allPosts = [];
+    async function renderPosts(page) {
+        const postList = document.querySelector('.postList');
+        postList.innerHTML = '';
 
-        querySnapshot.forEach(doc => {
-            const post = doc.data();
-            allPosts.push({
-                title: post.title,
-                date: new Date(post.createdAt.toDate()).toLocaleDateString(),
+        // Firestore에서 데이터를 불러옴 (처음 한 번만 호출되도록 변경)
+        if (allPosts.length === 0) {
+            const querySnapshot = await getDocs(query(collection(db, 'guestRoomPosts'), orderBy('createdAt', 'desc')));
+            querySnapshot.forEach(doc => {
+                allPosts.push({
+                    id: doc.id,
+                    title: doc.data().title,
+                    date: new Date(doc.data().createdAt.toDate()).toLocaleDateString()
+                });
             });
+        }
+
+        const start = (page - 1) * postsPerPage;
+        const end = Math.min(page * postsPerPage, allPosts.length);
+
+        const paginatedPosts = allPosts.slice(start, end);
+
+        paginatedPosts.forEach(post => {
+            const postItem = createPostItem(post);
+            postList.appendChild(postItem);
         });
 
-        return allPosts;
+        // 페이지 번호 업데이트
+        document.getElementById('postsCurrentPageIndicator').textContent = page;
+
+        // 이전, 다음 버튼 상태 업데이트
+        updatePaginationButtons(page, allPosts.length);
     }
 
-    function createPaginator(posts) {
-        let currentPage = 1;
+    function updatePaginationButtons(page, totalPosts) {
+        const prevButton = document.getElementById('postsPrevPageButton');
+        const nextButton = document.getElementById('postsNextPageButton');
 
-        function renderPosts(page) {
-            const postList = document.querySelector('.postList');
-            postList.innerHTML = '';
+        // 이전 버튼 상태 업데이트
+        if (page === 1) {
+            prevButton.style.display = 'none'; // 첫 페이지에서는 이전 버튼 숨김
+        } else {
+            prevButton.style.display = 'inline-block'; // 첫 페이지가 아니면 이전 버튼 표시
+        }
 
-            const start = (page - 1) * postsPerPage;
-            const end = Math.min(page * postsPerPage, posts.length); // 마지막 인덱스를 posts.length로 제한
+        // 다음 버튼 상태 업데이트
+        if (page * postsPerPage >= totalPosts) {
+            nextButton.style.display = 'none'; // 마지막 페이지에서는 다음 버튼 숨김
+        } else {
+            nextButton.style.display = 'inline-block'; // 마지막 페이지가 아니면 다음 버튼 표시
+        }
+    }
 
-            const paginatedPosts = posts.slice(start, end);
+    return {
+        init: function () {
+            let currentPage = 1;
 
-            paginatedPosts.forEach(post => {
-                const postItem = document.createElement('div');
-                postItem.classList.add('postItem');
-                postItem.innerHTML = `
-                    <h3 class="postTitle">${post.title}</h3>
-                    <p class="postDate">${post.date}</p>
-                `;
-                postList.appendChild(postItem);
+            renderPosts(currentPage);
+
+            document.querySelector('.pagination').addEventListener('click', (event) => {
+                if (event.target.closest('#postsPrevPageButton') && currentPage > 1) {
+                    currentPage--;
+                    renderPosts(currentPage);
+                } else if (event.target.closest('#postsNextPageButton') && currentPage * postsPerPage < allPosts.length) {
+                    currentPage++;
+                    renderPosts(currentPage);
+                }
             });
-
-            // 페이지 번호 업데이트
-            document.getElementById('postsCurrentPageIndicator').textContent = page;
-
-            // 이전, 다음 버튼 상태 업데이트
-            updatePaginationButtons(page, posts.length);
         }
-
-        function updatePaginationButtons(page, totalPosts) {
-            const prevButton = document.getElementById('postsPrevPageButton');
-            const nextButton = document.getElementById('postsNextPageButton');
-
-            // 이전 버튼 상태 업데이트
-            if (page === 1) {
-                prevButton.style.display = 'none'; // 첫 페이지에서는 이전 버튼 숨김
-            } else {
-                prevButton.style.display = 'inline-block'; // 첫 페이지가 아니면 이전 버튼 표시
-            }
-
-            // 다음 버튼 상태 업데이트
-            if (page * postsPerPage >= totalPosts) {
-                nextButton.style.display = 'none'; // 마지막 페이지에서는 다음 버튼 숨김
-            } else {
-                nextButton.style.display = 'inline-block'; // 마지막 페이지가 아니면 다음 버튼 표시
-            }
-        }
-
-        return {
-            init: function () {
-                renderPosts(currentPage);
-
-                document.querySelector('.pagination').addEventListener('click', (event) => {
-                    if (event.target.closest('#postsPrevPageButton') && currentPage > 1) {
-                        currentPage--;
-                        renderPosts(currentPage);
-                    } else if (event.target.closest('#postsNextPageButton') && currentPage * postsPerPage < posts.length) {
-                        currentPage++;
-                        renderPosts(currentPage);
-                    }
-                });
-
-                // 초기 버튼 상태 설정
-                updatePaginationButtons(currentPage, posts.length);
-            }
-        };
-    }
-
-    // 페이지네이션 초기화
-    fetchPosts().then(allPosts => {
-        const paginator = createPaginator(allPosts);
-        paginator.init();
-    }).catch(error => {
-        console.error('게시글을 불러오는 중 오류 발생:', error);
-    });
+    };
 }
 
 // 게시글 작성 폼의 제출 함수
 function initPostManagement() {
-    document.getElementById('postWriteForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
+    const postWriteForm = document.getElementById('postWriteForm');
+    
+    if (postWriteForm) {
+        postWriteForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
 
-        const title = document.getElementById('postTitle').value.trim();
-        const password = document.getElementById('postPassword').value.trim();
-        const content = document.getElementById('postContent').value.trim();
+            const title = document.getElementById('postTitle').value.trim();
+            const password = document.getElementById('postPassword').value.trim();
+            const content = document.getElementById('postContent').value.trim();
 
-        if (password.length !== 4) {
-            alert('비밀번호는 4자리 숫자로 입력해야 합니다.');
-            return;
-        }
-
-        try {
-            const user = auth.currentUser;
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const nickname = userData.nickName;
-
-                await addDoc(collection(db, 'guestRoomPosts'), {
-                    title: title,
-                    content: content,
-                    authorId: user.uid,
-                    authorNickname: nickname,
-                    password: btoa(password),
-                    createdAt: new Date()
-                });
-
-                alert('게시글이 작성되었습니다!');
-                showPage('guestRoom');  // guestRoom 페이지로 이동
-
-                // 게시글 목록 갱신
-                loadPosts();  // 게시글 목록을 다시 불러옴
-                initPagination();  // 페이지네이션을 다시 설정
-            } else {
-                alert('사용자 정보가 없습니다.');
+            if (password.length !== 4) {
+                alert('비밀번호는 4자리 숫자로 입력해야 합니다.');
+                return;
             }
-        } catch (error) {
-            console.error('게시글 작성 실패:', error);
-            alert('게시글 작성에 실패했습니다.');
-        }
-    });
+
+            try {
+                const user = auth.currentUser;
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const nickname = userData.nickName;
+
+                    await addDoc(collection(db, 'guestRoomPosts'), {
+                        title: title,
+                        content: content,
+                        authorId: user.uid,
+                        authorNickname: nickname,
+                        password: btoa(password),
+                        createdAt: new Date()
+                    });
+
+                    alert('게시글이 작성되었습니다!');
+                    showPage('guestRoom');  // guestRoom 페이지로 이동
+                    const paginator = initPagination();  // 페이지네이션을 다시 설정
+                    paginator.init();
+                } else {
+                    alert('사용자 정보가 없습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 작성 실패:', error);
+                alert('게시글 작성에 실패했습니다.');
+            }
+        });
+    }
 }
 
-
-// 게시글 목록을 로드하는 함수
-async function loadPosts() {
-    const postListElement = document.querySelector('.postList');
-    postListElement.innerHTML = ''; // 기존 목록 초기화
-
-    // Firestore에서 createdAt 필드를 기준으로 최신순으로 정렬하여 가져옴
-    const querySnapshot = await getDocs(query(collection(db, 'guestRoomPosts'), orderBy('createdAt', 'desc')));
-
-    querySnapshot.forEach((doc) => {
-        const post = doc.data();
-        const postItem = document.createElement('div');
-        postItem.classList.add('postItem');
-
-        postItem.innerHTML = `
-            <h3 class="postTitle">${post.title}</h3>
-            <p class="postDate">${new Date(post.createdAt.toDate()).toLocaleDateString()}</p>
-        `;
-
-        postListElement.appendChild(postItem);
-    });
+// 게시글 로드 페이지
+async function loadPostDetail(postId) {
+    try {
+        const postDoc = await getDoc(doc(db, 'guestRoomPosts', postId));
+        if (postDoc.exists()) {
+            const post = postDoc.data();
+            // 상세 페이지 요소에 데이터 채우기
+            document.getElementById('postDetailTitleText').textContent = post.title;
+            document.getElementById('postAuthorNickname').textContent = post.authorNickname;
+            document.getElementById('postDateText').textContent = new Date(post.createdAt.toDate()).toLocaleDateString();
+            document.getElementById('postContentWrapper').innerHTML = `<p>${post.content}</p>`;
+        } else {
+            alert('게시글을 찾을 수 없습니다.');
+        }
+    } catch (error) {
+        console.error('게시글 로드 중 오류 발생:', error);
+        alert('게시글을 로드하는 데 실패했습니다.');
+    }
 }
