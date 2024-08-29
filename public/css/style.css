@@ -337,7 +337,7 @@ input[type="password"]:focus {
 }
 
 .post_search_wrapper input {
-    width: 80%;
+    width: 70%;
     font-family: "Nanum Myeongjo", serif;
     font-size: 13px;
     border: none;
@@ -458,20 +458,28 @@ input[type="password"]:focus {
     font-weight: bold;
 }
 
-#postPassword {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    font-family: "Nanum Myeongjo", serif;
+#postContent {
+    line-height: 1.7;
+}
+
+.postWriteActionBox {
+    text-align: right;
+}
+
+#postWriteCancel {
+    background-color: #A02334;
+}
+
+#postWriteBtn {
+    background-color: #135D66;
 }
 
 #postWriteForm button {
-    padding: 10px;
+    font-family: "Nanum Myeongjo", serif;
+    padding: 4px 10px;
     box-sizing: border-box;
-    font-size: 20px;
+    font-size: 17px;
     border: none;
-    background-color: #9BBEC8;
     color: #fff;
     border-radius: 25px;
 }
@@ -518,6 +526,9 @@ input[type="password"]:focus {
 #postDetailWrapper {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     padding: 20px;
     background-color: #508C9B;
     border-radius: 15px;
@@ -576,11 +587,165 @@ input[type="password"]:focus {
 #postContentWrapper {
     min-height: 250px;
     background-color: #fff;
+    word-wrap: break-word;
     font-size: 16px;
     padding: 20px 10px;
     border-radius: 10px;
-    line-height: 1.6;
+    line-height: 1.7;
     color: #000;
-    margin-top: 20px;
 }
 
+.postContentActionContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.postCommentBox {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    font-size: 24px;
+    color: #EEEEEE;
+}
+
+.postCommentBox span {
+    font-size: 15px;
+    text-align: center;
+}
+
+.postContentAction button {
+    font-family: "Nanum Myeongjo", serif;
+    border: none;
+    padding: 4px 10px;
+    font-size: 17px;
+    border-radius: 7px;
+}
+
+#editPostButton {
+    background-color: #135D66;
+    color: #E3FEF7;
+}
+
+#deletePostButton {
+    background-color: #A02334;
+    color: #fff;
+}
+
+/* ============================ 게시글 댓글 바텀시트 ========================================= */
+
+/* 바텀시트 전체 컨테이너 */
+.postCommentBottomSheet {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: -100%; /* 처음엔 화면 밖에 위치 */
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    height: 60vh; /* 화면의 60% 높이 */
+    background-color: #ffffff;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: bottom 0.3s ease-out; /* 부드럽게 올라오도록 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 바텀시트 활성화 */
+.postCommentBottomSheet.active {
+    bottom: 0; /* 화면 하단에 맞게 올라옴 */
+}
+
+/* 바텀시트 맨 위 중앙의 내릴 수 있는 표시 */
+.postCommentBottomSheetHandle {
+    width: 40px;
+    height: 5px;
+    background-color: #ccc;
+    border-radius: 5px;
+    margin: 10px auto;
+    cursor: pointer; /* 사용자에게 드래그 가능하다는 시각적 힌트를 줌 */
+}
+
+/* 바깥 영역 (배경) */
+.bottomSheetOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* 활성화 시 배경 표시 */
+.bottomSheetOverlay.active {
+    display: block;
+}
+
+/* 댓글 리스트 영역 */
+.commentList {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto; /* 댓글이 많을 경우 스크롤 가능하게 설정 */
+    border-top: 1px solid #ddd;
+}
+
+/* 댓글 입력 영역 */
+.postCommentBottomSheet textarea {
+    flex: 0;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    outline: none;
+    font-size: 14px;
+}
+
+/* 댓글 작성 버튼 */
+.postCommentBottomSheet button {
+    margin: 10px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+}
+
+.postCommentBottomSheet button:hover {
+    background-color: #0056b3;
+}
+
+/* 댓글 삭제 버튼 */
+.commentDeleteButton {
+    margin-left: 10px;
+    padding: 3px 6px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.commentDeleteButton:hover {
+    background-color: #ff1a1a;
+}
+
+/* 개별 댓글 스타일 */
+.commentItem {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.commentItem:last-child {
+    border-bottom: none;
+}

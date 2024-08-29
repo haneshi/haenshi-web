@@ -1,7 +1,7 @@
 // Firebase와 연동하기 위해 필요한 서비스 불러오기
-import { auth, db, createUserWithEmailAndPassword, setDoc, doc } from './firebase-config.js';
+import { auth, db, createUserWithEmailAndPassword, setDoc, doc, deleteDoc, serverTimestamp } from './firebase-config.js';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getDocs, query, where, collection, getDoc, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getDocs, query, where, collection, getDoc, addDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // 전역 변수
 let previousPages = [];
@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeApp(); // 전체 앱 초기화
 });
 
-// 전체 앱 초기화를 위한 함수
 function initializeApp() {
     initPageNavigation();  // 페이지 네비게이션 초기화
     initPostManagement();  // 게시글 관리 초기화
@@ -19,6 +18,7 @@ function initializeApp() {
     paginator.init(); // 페이지네이션 시작
     initAuthForms();       // 로그인 및 회원가입 폼 초기화
     initAuthStateHandling(); // 인증 상태 관리 초기화
+    initCommentSheet();
 }
 
 // 페이지 전환 처리 함수
@@ -333,26 +333,32 @@ function createPostItem(post) {
     return postItem;
 }
 
+// 전역 변수 선언
+let isEditing = false; // 수정 중인지 여부를 나타내는 플래그
+let editingPostId = null; // 수정 중인 게시글의 ID
+let currentPostId = null; // 현재 게시글 ID를 저장하는 변수
+let commentCache = {}; // 댓글 캐싱
+
 // 게시글 페이지네이션 스크립트
 function initPagination() {
     const postsPerPage = 7;
     let allPosts = []; // 전체 게시글 데이터를 저장할 변수
 
+    function listenForPostUpdates() {
+        const postsQuery = query(collection(db, 'guestRoomPosts'), orderBy('createdAt', 'desc'));
+        onSnapshot(postsQuery, (snapshot) => {
+            allPosts = snapshot.docs.map(doc => ({
+                id: doc.id,
+                title: doc.data().title,
+                date: new Date(doc.data().createdAt.toDate()).toLocaleDateString()
+            }));
+            renderPosts(1); // 첫 페이지로 게시글 렌더링
+        });
+    }
+
     async function renderPosts(page) {
         const postList = document.querySelector('.postList');
         postList.innerHTML = '';
-
-        // Firestore에서 데이터를 불러옴 (처음 한 번만 호출되도록 변경)
-        if (allPosts.length === 0) {
-            const querySnapshot = await getDocs(query(collection(db, 'guestRoomPosts'), orderBy('createdAt', 'desc')));
-            querySnapshot.forEach(doc => {
-                allPosts.push({
-                    id: doc.id,
-                    title: doc.data().title,
-                    date: new Date(doc.data().createdAt.toDate()).toLocaleDateString()
-                });
-            });
-        }
 
         const start = (page - 1) * postsPerPage;
         const end = Math.min(page * postsPerPage, allPosts.length);
@@ -375,27 +381,14 @@ function initPagination() {
         const prevButton = document.getElementById('postsPrevPageButton');
         const nextButton = document.getElementById('postsNextPageButton');
 
-        // 이전 버튼 상태 업데이트
-        if (page === 1) {
-            prevButton.style.display = 'none'; // 첫 페이지에서는 이전 버튼 숨김
-        } else {
-            prevButton.style.display = 'inline-block'; // 첫 페이지가 아니면 이전 버튼 표시
-        }
-
-        // 다음 버튼 상태 업데이트
-        if (page * postsPerPage >= totalPosts) {
-            nextButton.style.display = 'none'; // 마지막 페이지에서는 다음 버튼 숨김
-        } else {
-            nextButton.style.display = 'inline-block'; // 마지막 페이지가 아니면 다음 버튼 표시
-        }
+        prevButton.style.display = page === 1 ? 'none' : 'inline-block';
+        nextButton.style.display = page * postsPerPage >= totalPosts ? 'none' : 'inline-block';
     }
 
     return {
         init: function () {
             let currentPage = 1;
-
-            renderPosts(currentPage);
-
+            listenForPostUpdates(); // 게시글 실시간 업데이트 시작
             document.querySelector('.pagination').addEventListener('click', (event) => {
                 if (event.target.closest('#postsPrevPageButton') && currentPage > 1) {
                     currentPage--;
@@ -409,20 +402,21 @@ function initPagination() {
     };
 }
 
-// 게시글 작성 폼의 제출 함수
+
+// 게시글 수정 및 작성 폼의 제출 함수
 function initPostManagement() {
     const postWriteForm = document.getElementById('postWriteForm');
-    
+    const postWriteCancelBtn = document.getElementById('postWriteCancel');
+
     if (postWriteForm) {
         postWriteForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             const title = document.getElementById('postTitle').value.trim();
-            const password = document.getElementById('postPassword').value.trim();
             const content = document.getElementById('postContent').value.trim();
 
-            if (password.length !== 4) {
-                alert('비밀번호는 4자리 숫자로 입력해야 합니다.');
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해야 합니다.');
                 return;
             }
 
@@ -433,19 +427,34 @@ function initPostManagement() {
                     const userData = userDoc.data();
                     const nickname = userData.nickName;
 
-                    await addDoc(collection(db, 'guestRoomPosts'), {
-                        title: title,
-                        content: content,
-                        authorId: user.uid,
-                        authorNickname: nickname,
-                        password: btoa(password),
-                        createdAt: new Date()
-                    });
+                    if (isEditing && editingPostId) {
+                        // 기존 게시글 수정 처리
+                        await setDoc(doc(db, 'guestRoomPosts', editingPostId), {
+                            title: title,
+                            content: content,
+                            authorId: user.uid,
+                            authorNickname: nickname
+                        }, { merge: true });
+                        alert('게시글이 수정되었습니다!');
+                    } else {
+                        // 새 게시글 작성 처리
+                        await addDoc(collection(db, 'guestRoomPosts'), {
+                            title: title,
+                            content: content,
+                            authorId: user.uid,
+                            authorNickname: nickname,
+                            createdAt: new Date()
+                        });
+                        alert('게시글이 작성되었습니다!');
+                    }
 
-                    alert('게시글이 작성되었습니다!');
-                    showPage('guestRoom');  // guestRoom 페이지로 이동
-                    const paginator = initPagination();  // 페이지네이션을 다시 설정
-                    paginator.init();
+                    // 폼 초기화
+                    postWriteForm.reset();
+                    isEditing = false;
+                    editingPostId = null;
+
+                    // 작성 후 guestRoom 페이지로 이동
+                    showPage('guestRoom');
                 } else {
                     alert('사용자 정보가 없습니다.');
                 }
@@ -454,25 +463,250 @@ function initPostManagement() {
                 alert('게시글 작성에 실패했습니다.');
             }
         });
+
+        // '취소하기' 버튼 클릭 시 폼 초기화 및 페이지 이동
+        postWriteCancelBtn.addEventListener('click', function () {
+            if (confirm('작성 중인 내용을 취소하시겠습니까?')) {
+                postWriteForm.reset(); // 폼 초기화
+                isEditing = false;
+                editingPostId = null;
+                showPage('guestRoom'); // guestRoom 페이지로 이동
+            }
+        });
     }
 }
 
-// 게시글 로드 페이지
-async function loadPostDetail(postId) {
-    try {
-        const postDoc = await getDoc(doc(db, 'guestRoomPosts', postId));
-        if (postDoc.exists()) {
-            const post = postDoc.data();
-            // 상세 페이지 요소에 데이터 채우기
-            document.getElementById('postDetailTitleText').textContent = post.title;
-            document.getElementById('postAuthorNickname').textContent = post.authorNickname;
-            document.getElementById('postDateText').textContent = new Date(post.createdAt.toDate()).toLocaleDateString();
-            document.getElementById('postContentWrapper').innerHTML = `<p>${post.content}</p>`;
-        } else {
-            alert('게시글을 찾을 수 없습니다.');
+function enableEditMode(postId) {
+    // 수정 모드 설정
+    isEditing = true;
+    editingPostId = postId;
+
+    // 해당 게시글의 데이터를 로드하여 폼에 채워 넣기
+    loadPostDetail(postId, true);
+}
+
+// 게시글 삭제 함수
+async function handleDeleteButtonClick(postId) {
+    if (confirm('이 게시글을 삭제하시겠습니까?')) {
+        try {
+            // Firestore의 실시간 업데이트 리스너 제거
+            if (unsubscribeFromPostDetail) {
+                unsubscribeFromPostDetail();
+                unsubscribeFromPostDetail = null;
+            }
+
+            await deleteDoc(doc(db, 'guestRoomPosts', postId));
+            alert('게시글이 삭제되었습니다.');
+
+            // 삭제 후 바로 guestRoom 페이지로 이동
+            showPage('guestRoom');
+        } catch (error) {
+            console.error('게시글 삭제 실패:', error);
+            alert('게시글 삭제에 실패했습니다.');
         }
+    }
+}
+
+// 게시글을 불러오고 상세페이지를 렌더링하는 함수
+let unsubscribeFromPostDetail = null; //실시간 업데이트 조건부 변수
+
+async function loadPostDetail(postId, isEditMode = false) {
+    try {
+        const postDocRef = doc(db, 'guestRoomPosts', postId);
+
+        // 기존의 리스너가 존재한다면 먼저 제거
+        if (unsubscribeFromPostDetail) {
+            unsubscribeFromPostDetail();
+            unsubscribeFromPostDetail = null;
+        }
+
+        // Firestore의 실시간 업데이트 리스너 설정
+        unsubscribeFromPostDetail = onSnapshot(postDocRef, (doc) => {
+            if (doc.exists()) {
+                const postData = doc.data();
+                currentPostId = postId;
+
+                if (isEditMode) {
+                    fillEditForm(postData);
+                } else {
+                    fillPostDetailPage(postData);
+                    showPage('postDetail');
+                }
+            } else {
+                showPage('guestRoom');  // 게시글을 찾을 수 없을 때 guestRoom 페이지로 이동
+            }
+        });
     } catch (error) {
         console.error('게시글 로드 중 오류 발생:', error);
         alert('게시글을 로드하는 데 실패했습니다.');
     }
+}
+
+function fillEditForm(postData) {
+    document.getElementById('postTitle').value = postData.title;
+    document.getElementById('postContent').value = postData.content;
+    isEditing = true;
+    editingPostId = currentPostId;
+    showPage('postWrite');
+}
+
+function fillPostDetailPage(postData) {
+    document.getElementById('postDetailTitleText').textContent = postData.title;
+    document.getElementById('postAuthorNickname').textContent = postData.authorNickname;
+    document.getElementById('postDateText').textContent = new Date(postData.createdAt.toDate()).toLocaleDateString();
+    document.getElementById('postContentWrapper').innerHTML = `<p>${postData.content}</p>`;
+
+    // 댓글 리스트에 postId를 동적으로 할당
+    const commentList = document.querySelector('.commentList');
+    if (commentList) {
+        commentList.setAttribute('data-post-id', currentPostId);
+    }
+
+    // 작성자 확인 및 버튼 표시 처리
+    const user = auth.currentUser;
+    if (user && postData.authorId === user.uid) {
+        document.querySelector('.postContentAction').style.display = 'flex';
+        document.getElementById('editPostButton').onclick = () => enableEditMode(currentPostId);
+        document.getElementById('deletePostButton').onclick = () => handleDeleteButtonClick(currentPostId);
+    } else {
+        document.querySelector('.postContentAction').style.display = 'none';
+    }
+
+    // 댓글 로드 및 실시간 댓글 개수 업데이트
+    loadComments(currentPostId);
+    listenForCommentUpdates(currentPostId);
+}
+
+
+// 댓글 바텀시트 올라오게
+function initCommentSheet() {
+    const postCommentBox = document.querySelector('.postCommentBox');
+    const bottomSheet = document.querySelector('.postCommentBottomSheet');
+    const overlay = document.querySelector('.bottomSheetOverlay');
+
+    if (postCommentBox) {
+        postCommentBox.addEventListener('click', function () {
+            // 바텀시트와 오버레이를 활성화
+            bottomSheet.classList.add('active');
+            overlay.classList.add('active');
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', function () {
+            // 바텀시트와 오버레이를 비활성화
+            bottomSheet.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+}
+
+// 댓글 작성하고 제출하기
+async function submitComment() {
+    const commentInput = document.getElementById('commentText');
+    const commentText = commentInput.value.trim();
+    const postId = document.querySelector('.commentList').getAttribute('data-post-id');
+
+    if (!commentText) {
+        alert('댓글을 입력해주세요.');
+        return;
+    }
+
+    const user = auth.currentUser;
+
+    if (user) {
+        try {
+            // Firestore에서 사용자 닉네임 가져오기
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const nickname = userData.nickName;  // 사용자의 닉네임을 가져옴
+
+                // 댓글 Firestore에 추가
+                await addDoc(collection(db, 'comments'), {
+                    postId: postId,  // 댓글이 속한 게시물의 ID 저장
+                    text: commentText,
+                    authorId: user.uid,
+                    authorNickname: nickname,  // 닉네임 저장
+                    createdAt: new Date()
+                });
+
+                commentInput.value = '';  // 댓글 입력창 초기화
+                loadComments(postId);  // 댓글 다시 로드
+            } else {
+                console.error('사용자 문서를 찾을 수 없습니다.');
+                alert('댓글 작성에 실패했습니다. 사용자 정보를 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('댓글 작성 실패:', error);
+            alert('댓글 작성에 실패했습니다.');
+        }
+    } else {
+        alert('로그인 후 댓글을 작성하실 수 있습니다.');
+    }
+}
+
+document.getElementById('submitComment').addEventListener('click', submitComment);
+
+async function loadComments(postId) {
+    const commentList = document.querySelector('.commentList');
+    const commentCountElement = document.getElementById('commentCount');
+    commentList.innerHTML = '';  // 기존 댓글 초기화
+
+    const commentsQuery = query(
+        collection(db, 'comments'),
+        where('postId', '==', postId),  // 해당 게시물의 ID로 필터링
+        orderBy('createdAt', 'asc')
+    );
+    const querySnapshot = await getDocs(commentsQuery);
+
+    // 댓글 개수 설정
+    const commentCount = querySnapshot.size; // 댓글 개수
+    commentCountElement.textContent = commentCount;
+
+    querySnapshot.forEach((doc) => {
+        const commentData = doc.data();
+        const commentItem = document.createElement('div');
+        commentItem.classList.add('commentItem');
+        commentItem.innerHTML = `
+            <p><strong>${commentData.authorNickname}</strong>: ${commentData.text}</p>
+        `;
+
+        const user = auth.currentUser;
+        if (user && user.uid === commentData.authorId) {
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.addEventListener('click', () => deleteComment(doc.id, postId));
+            commentItem.appendChild(deleteButton);
+        }
+
+        commentList.appendChild(commentItem);
+    });
+}
+
+async function deleteComment(commentId, postId) {
+    if (confirm('이 댓글을 삭제하시겠습니까?')) {
+        try {
+            await deleteDoc(doc(db, 'comments', commentId));
+            alert('댓글이 삭제되었습니다.');
+            loadComments(postId);  // 댓글 다시 로드
+        } catch (error) {
+            console.error('댓글 삭제 실패:', error);
+            alert('댓글 삭제에 실패했습니다.');
+        }
+    }
+}
+
+function listenForCommentUpdates(postId) {
+    const commentCountElement = document.getElementById('commentCount');
+    const commentsRef = query(
+        collection(db, 'comments'),
+        where('postId', '==', postId)
+    );
+
+    // Firestore 실시간 업데이트
+    onSnapshot(commentsRef, (snapshot) => {
+        // 댓글 개수 업데이트
+        commentCountElement.textContent = snapshot.size;
+    });
 }

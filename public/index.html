@@ -45,11 +45,6 @@
         </header>
 
         <header class="page-header" id="postWrite-header">
-            <div class="backBtn_box">
-                <div class="back_button">
-                    <i class="fa-solid fa-angle-left"></i>
-                </div>
-            </div>
             <h1>게시글 작성 헤더</h1>
         </header>
 
@@ -163,13 +158,14 @@
                     <div class="post-form-group">
                         <input type="text" id="postTitle" placeholder="제목을 입력하세요" required>
                     </div>
-                    <div class="post-form-group">
-                        <input type="password" id="postPassword" maxlength="4" placeholder="비밀번호" required>
-                    </div>
+
                     <div class="post-form-group">
                         <textarea id="postContent" rows="10" placeholder="내용을 입력하세요" required></textarea>
                     </div>
-                    <button type="submit">작성하기</button>
+                    <div class="postWriteActionBox">
+                        <button id="postWriteBtn" type="submit">Post</button>
+                        <button id="postWriteCancel">cancel</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -186,10 +182,33 @@
                     </div>
                     <div id="postContentWrapper">
                         <!-- 게시글 내용이 여기에 표시됩니다 -->
-                        
+                    </div>
+
+                    <div class="postContentActionContainer">
+                        <div class="postCommentBox">
+                            <i class="fa-regular fa-newspaper"></i>
+                            <span id="commentCount"></span>
+                        </div>
+                        <div class="postContentAction">
+                            <div class="postContentAction_btn">
+                                <button id="editPostButton">edit</button>
+                                <button id="deletePostButton">delete</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="bottomSheetOverlay"></div>
+
+        <div class="postCommentBottomSheet">
+            <div class="postCommentBottomSheetHandle"></div>
+
+            <div class="commentList"></div> <!-- 댓글 목록 표시 -->
+
+            <textarea id="commentText" placeholder="댓글을 입력하세요..."></textarea>
+            <button id="submitComment">댓글 달기</button>
         </div>
 
         <nav>
