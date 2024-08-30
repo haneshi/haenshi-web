@@ -1,0 +1,1088 @@
+@import "reset.css";
+
+/* .nanum-myeongjo-regular {
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: 400;
+    font-style: normal;
+} */
+
+body {
+    max-width: 430px;
+    margin: auto;
+    font-family: "Nanum Myeongjo", serif;
+    height: calc(var(--vh, 1vh) * 100);
+    background-color: #134B70;
+}
+
+.page {
+    display: none;
+    padding: 25px 15px;
+    padding-top: 80px;
+    padding-bottom: 70px;
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #427D9D;
+    padding: 30px;
+    box-sizing: border-box;
+    border-radius: 0 0 15px 15px;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    max-width: 430px;
+}
+
+header h1 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+}
+
+nav {
+    max-width: 430px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+    box-sizing: border-box;
+    background-color: #427D9D;
+    border-radius: 15px 15px 0 0;
+}
+
+nav a {
+    color: #9BBEC8;
+}
+
+.backBtn_box {
+    position: absolute;
+    font-size: 25px;
+}
+
+.loginAuthbox {
+    position: absolute;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 5px;
+}
+
+#logoutButton {
+    all: unset;
+    right: 15px;
+}
+
+#logoutButton i {
+    font-size: 18px;
+    color: #9BBEC8;
+}
+
+#logoutButton span {
+    font-size: 13px;
+    color: #9BBEC8;
+}
+
+#welComeMessage {
+    font-size: 10px;
+}
+
+/* ===========================================================================home Page==================================================================================== */
+
+.homeContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    flex-grow: 1;
+    /* 부모 요소의 높이에 맞추어 공간 채우기 */
+    flex-shrink: 1;
+    padding-bottom: 20px;
+}
+
+.homeTopBox {
+    width: 100%;
+    background-color: #EEEEEE;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.homeTopBox h2 {
+    font-size: 40px;
+    font-weight: bold;
+    line-height: 1.8;
+}
+
+.homeMiddleBox {
+    width: 100%;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    padding: 20px 15px;
+    box-sizing: border-box;
+    text-align: left;
+    line-height: 1.7;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.homeArrow {
+    width: 30px;
+    height: 30px;
+    border-left: 5px solid white;
+    border-bottom: 5px solid white;
+    transform: rotate(-45deg);
+    margin: 0 auto;
+    animation: moveDown 1.5s infinite;
+}
+
+/* 화살표 또는 손이 아래로 움직이는 애니메이션 */
+@keyframes moveDown {
+    0% {
+        transform: translateY(0) rotate(-45deg);
+    }
+
+    50% {
+        transform: translateY(10px) rotate(-45deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(-45deg);
+    }
+}
+
+.gitHub_button {
+    padding-top: 20px;
+}
+
+.gitHub_button a {
+    text-decoration: none;
+}
+
+.github {
+    display: flex;
+    background-color: rgb(24, 23, 23);
+    color: #ffffff;
+    padding: 0.5rem 1.4rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    align-items: center;
+    border-radius: 0.5rem;
+    gap: 0.75rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: .6s ease;
+}
+
+.github svg {
+    height: 30px;
+}
+
+
+/* ===========================================================================Contact Page==================================================================================== */
+
+.contactContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 35px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.contactContainer h2 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.contactBox {
+    display: flex;
+    width: 100%;
+}
+
+.contactForm {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 30px 30px -30px rgba(27, 26, 26, 0.315);
+}
+
+.contactForm input {
+    outline: 0;
+    border: 1px solid rgb(219, 213, 213);
+    border-radius: 8px;
+    width: 100%;
+    height: 35px;
+    padding: 8px 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.contactForm textarea {
+    border-radius: 8px;
+    font-size: 16px;
+    height: 200px;
+    width: 100%;
+    resize: none;
+    outline: 0;
+    border: 1px solid rgb(219, 213, 213);
+    padding: 8px 4px;
+    box-sizing: border-box;
+}
+
+.contactForm button {
+    align-self: flex-end;
+    padding: 8px;
+    outline: 0;
+    border: 0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: royalblue;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* ===========================================================================Contact Page==================================================================================== */
+
+.aboutContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.aboutContent p {
+    line-height: 1.7;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+
+.myProfile {
+    width: 100px;
+    height: 150px;
+    object-fit: contain;
+    float: left;
+}
+
+.breaking {
+    width: 100px;
+    height: 90px;
+    object-fit: contain;
+    float: right;
+}
+
+
+/* From Uiverse.io by jeremyssocial */
+@keyframes blinkCursor {
+    50% {
+        border-right-color: transparent;
+    }
+}
+
+@keyframes typeAndDelete {
+
+    0%,
+    10% {
+        width: 0;
+    }
+
+    45%,
+    55% {
+        width: 6.2em;
+    }
+
+    /* adjust width based on content */
+    90%,
+    100% {
+        width: 0;
+    }
+}
+
+.terminal-loader {
+    border: 0.1em solid #333;
+    background-color: #1a1a1a;
+    color: #0f0;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1em;
+    padding: 1.5em 1em;
+    width: 12em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    float: right;
+}
+
+.terminal-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1.5em;
+    background-color: #333;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 0 0.4em;
+    box-sizing: border-box;
+}
+
+.terminal-controls {
+    float: right;
+}
+
+.control {
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    margin-left: 0.4em;
+    border-radius: 50%;
+    background-color: #777;
+}
+
+.control.close {
+    background-color: #e33;
+}
+
+.control.minimize {
+    background-color: #ee0;
+}
+
+.control.maximize {
+    background-color: #0b0;
+}
+
+.terminal-title {
+    float: left;
+    line-height: 1.5em;
+    color: #eee;
+}
+
+.text {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 0.2em solid green;
+    /* Cursor */
+    animation: typeAndDelete 4s steps(10) infinite,
+        blinkCursor 0.5s step-end infinite alternate;
+    margin-top: 1.5em;
+}
+
+
+/* ===========================================================================login Page==================================================================================== */
+
+#login-header {
+    align-items: center;
+    justify-content: center;
+}
+
+.loginContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.loginContainer h2 {
+    font-size: 25px;
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: bold;
+    font-style: normal;
+}
+
+#loginForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 40px 0 40px;
+    box-sizing: border-box;
+}
+
+.loginFormGroup {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.loginFormGroup label {
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.loginFormGroup input {
+    font-family: "Nanum Myeongjo", serif;
+    text-align: right;
+    width: 70%;
+    max-width: 70%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.loginFormGroup input[type="text"]:focus,
+input[type="password"]:focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px #135D66;
+    outline: none;
+}
+
+#loginBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #164863;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+
+#loginBtn:hover {
+    background-color: #164863;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+#loginBtn:active {
+    background-color: #164863;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.goToSignUpPage {
+    width: 100%;
+    text-align: right;
+    padding: 20px 40px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.goToSignUpPage a {
+    text-decoration: none;
+    color: #164863;
+    font-size: 13px;
+}
+
+
+
+
+
+
+/* ===========================================================================signUp Page==================================================================================== */
+
+.signUpContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+#signUpForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.signUpFormGroup {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.signUpFormGroup label {
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.signUpFormGroup input {
+    font-family: "Nanum Myeongjo", serif;
+    text-align: right;
+    width: 60%;
+    max-width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.signUpFormGroup input[type="text"]:focus,
+input[type="password"]:focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px #135D66;
+    outline: none;
+}
+
+.signUpFormGroup input::placeholder {
+    font-size: 10px;
+}
+
+#signUpBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #164863;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#signUpBtn:hover {
+    background-color: #164863;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#signUpBtn:active {
+    background-color: #164863;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ===========================================================================guestRoom Page==================================================================================== */
+
+.guestRoomContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.post_search {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.post_search_wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: white;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+
+.post_search_wrapper i {
+    padding: 10px;
+    font-size: 16px;
+    color: #aaa;
+}
+
+.post_search_wrapper input {
+    width: 70%;
+    font-family: "Nanum Myeongjo", serif;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+}
+
+.post_search button {
+    font-size: 16px;
+    margin-left: 10px;
+    border-radius: 10px;
+    background-color: #427D9D;
+    color: white;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.post_search button:hover {
+    background-color: #0056b3;
+}
+
+.post_top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post_top button {
+    all: unset;
+    background-color: #427D9D;
+    padding: 5px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.post_top>button>a {
+    display: block;
+    color: #fff;
+    font-size: 13px;
+}
+
+.postList {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.postItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #508C9B;
+    border-radius: 15px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.postTitle {
+    font-size: 18px;
+    color: #DDF2FD;
+    line-height: 1.2;
+}
+
+.postDate {
+    font-size: 14px;
+    color: #ccc;
+    white-space: nowrap;
+}
+
+.pagination button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: none;
+    color: #164863;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 19px;
+}
+
+/* ===========================================================================postWrite Page==================================================================================== */
+
+.postWriteContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px 20px;
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#postWriteForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.post-form-group input[type="text"],
+.post-form-group textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-family: "Nanum Myeongjo", serif;
+    font-weight: bold;
+}
+
+#postContent {
+    line-height: 1.7;
+}
+
+.postWriteActionBox {
+    text-align: right;
+}
+
+#postWriteCancel {
+    background-color: #A02334;
+}
+
+#postWriteBtn {
+    background-color: #135D66;
+}
+
+#postWriteForm button {
+    font-family: "Nanum Myeongjo", serif;
+    padding: 4px 10px;
+    box-sizing: border-box;
+    font-size: 17px;
+    border: none;
+    color: #fff;
+    border-radius: 25px;
+}
+
+.pagination {
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    /* 모든 요소를 중앙에 배치 */
+    align-items: center;
+    /* 수직 정렬 */
+    position: relative;
+    /* 부모를 기준으로 자식 요소 배치 */
+}
+
+#postsCurrentPageIndicator {
+    position: absolute;
+    /* 절대 위치로 중앙에 배치 */
+    left: 50%;
+    /* 부모의 정중앙에 위치 */
+    transform: translateX(-50%);
+    /* 자신의 크기만큼 왼쪽으로 이동하여 정확히 중앙에 배치 */
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    /* 텍스트 중앙 정렬 */
+}
+
+#postsPrevPageButton {
+    margin-right: auto;
+    /* 왼쪽 끝으로 배치 */
+}
+
+#postsNextPageButton {
+    margin-left: auto;
+    /* 오른쪽 끝으로 배치 */
+}
+
+/* ===========================================================================postDetail Page==================================================================================== */
+
+.postDetailContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 0px 20px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#postDetailWrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #508C9B;
+    border-radius: 15px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#postDetailWrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#postDetailHeaderWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#postDetailTitleText {
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 22px;
+    color: #000;
+}
+
+#postMetaWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+#postMetaWrapper span {
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+#postAuthorText {
+    color: #888;
+}
+
+#postAuthorText strong {
+    color: #134B70;
+}
+
+#postDateText {
+    color: #888;
+    white-space: nowrap;
+}
+
+#postContentWrapper {
+    min-height: 250px;
+    background-color: #fff;
+    word-wrap: break-word;
+    font-size: 16px;
+    padding: 20px 10px;
+    border-radius: 10px;
+    line-height: 1.7;
+    color: #000;
+}
+
+.postContentActionContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.postCommentBox {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    font-size: 24px;
+    color: #EEEEEE;
+}
+
+.postCommentBox span {
+    font-size: 15px;
+    text-align: center;
+}
+
+.postContentAction button {
+    font-family: "Nanum Myeongjo", serif;
+    border: none;
+    padding: 4px 10px;
+    font-size: 17px;
+    border-radius: 7px;
+}
+
+#editPostButton {
+    background-color: #135D66;
+    color: #E3FEF7;
+}
+
+#deletePostButton {
+    background-color: #A02334;
+    color: #fff;
+}
+
+/* ============================ 게시글 댓글 바텀시트 ========================================= */
+
+/* 바텀시트 전체 컨테이너 */
+.postCommentBottomSheet {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: -100%;
+    /* 처음엔 화면 밖에 위치 */
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    height: 65vh;
+    /* 화면의 60% 높이 */
+    background-color: #EEEEEE;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: bottom 0.3s ease-out;
+    /* 부드럽게 올라오도록 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 바텀시트 활성화 */
+.postCommentBottomSheet.active {
+    bottom: 0;
+    /* 화면 하단에 맞게 올라옴 */
+}
+
+/* 바텀시트 맨 위 중앙의 내릴 수 있는 표시 */
+.postCommentBottomSheetHandle {
+    width: 40px;
+    height: 5px;
+    background-color: #ccc;
+    border-radius: 5px;
+    margin: 10px auto;
+    cursor: pointer;
+    /* 사용자에게 드래그 가능하다는 시각적 힌트를 줌 */
+}
+
+/* 바깥 영역 (배경) */
+.bottomSheetOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* 활성화 시 배경 표시 */
+.bottomSheetOverlay.active {
+    display: block;
+}
+
+/* 댓글 리스트 영역 */
+.commentList {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 10px 15px;
+    overflow-y: auto;
+    /* 댓글이 많을 경우 스크롤 가능하게 설정 */
+}
+
+/* 개별 댓글 스타일 */
+.commentItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.commentItem:last-child {
+    border-bottom: none;
+}
+
+/* 댓글 삭제 버튼 */
+.commentDeleteButton {
+    padding: 5px 6px;
+    background: none;
+    color: #ccc;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.commentWriteBox {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* 댓글 입력 영역 */
+#commentText {
+    font-family: "Nanum Myeongjo", serif;
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    outline: none;
+    font-size: 17px;
+    line-height: 1.2;
+    padding: 4px 8px;
+}
+
+#submitComment {
+    padding: 3px 8px;
+    background-color: #134B70;
+    border: none;
+    border-radius: 20px;
+    font-size: 15px;
+    color: #DDF2FD;
+}
