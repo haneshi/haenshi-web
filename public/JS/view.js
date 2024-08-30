@@ -3,6 +3,13 @@ import { auth, db, createUserWithEmailAndPassword, setDoc, doc, deleteDoc, serve
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getDocs, query, where, collection, getDoc, addDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+function setScreenSize() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`); //"--vh"라는 속성으로 정의해준다.
+}
+
+window.addEventListener('resize', () => setScreenSize());
+
 // 전역 변수
 let previousPages = [];
 
@@ -33,7 +40,7 @@ function showPage(pageId, data = null) {
     // 비회원이 접근할 수 없는 페이지 처리
     const restrictedPages = ['postWrite', 'postDetail'];
     if (!user && restrictedPages.includes(pageId)) {
-        alert('이 페이지는 회원만 접근할 수 있습니다.');
+        alert('Restricted access: Members only. 회원만 접근할 수 있습니다.');
         return showPage('login'); // 비회원은 로그인 페이지로 리다이렉트
     }
 
@@ -65,7 +72,7 @@ function updatePreviousPages(pageId) {
     const currentPage = document.querySelector('.page.active');
     if (currentPage && currentPage.id !== pageId) {
         previousPages.push(currentPage.id);
-        console.log(`Page added to stack: ${currentPage.id}`);
+        // console.log(`Page added to stack: ${currentPage.id}`);
     }
 }
 
@@ -89,12 +96,12 @@ function initAuthStateHandling() {
     const navLoginLink = document.querySelector('nav a[data-link="login"]');
 
     onAuthStateChanged(auth, (user) => {
-        console.log('Auth state changed:', user); // 인증 상태가 변경될 때마다 로그 출력
+        // console.log('Auth state changed:', user); // 인증 상태가 변경될 때마다 로그 출력
 
         if (user) {
             console.log('User is logged in');
             if (navLoginLink) {
-                navLoginLink.style.display = 'none'; // 로그인 상태라면 로그인 링크 숨기기
+                navLoginLink.style.display = 'none';
             }
 
             headers.forEach(header => {
@@ -105,7 +112,7 @@ function initAuthStateHandling() {
         } else {
             console.log('User is logged out');
             if (navLoginLink) {
-                navLoginLink.style.display = 'block'; // 로그아웃 상태라면 로그인 링크 보이기
+                navLoginLink.style.display = 'block';
             }
 
             headers.forEach(header => {
@@ -116,31 +123,61 @@ function initAuthStateHandling() {
 }
 
 // 로그아웃 버튼 생성 함수
-function createLogoutButton(header) {
+async function createLogoutButton(header) {
+
+    const loginAuthBox = document.createElement('div');
+    loginAuthBox.className = 'loginAuthbox';
+
     const logoutButton = document.createElement('button');
     logoutButton.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>';
     logoutButton.id = 'logoutButton';
-    header.appendChild(logoutButton);
 
-    logoutButton.addEventListener('click', async () => {
+    const welcomeMessage = document.createElement('span');
+    welcomeMessage.id = 'welComeMessage';
+    welcomeMessage.textContent = 'Loading...'; // 초기 로딩 메시지 설정
+
+    loginAuthBox.appendChild(logoutButton);
+    loginAuthBox.appendChild(welcomeMessage);
+
+    header.appendChild(loginAuthBox); // 페이지 로드 직후 UI가 보이도록 추가
+
+    // 로그인 상태 및 사용자 정보를 빠르게 확인
+    const user = auth.currentUser;
+    if (user) {
         try {
-            await signOut(auth);
-            alert('로그아웃 되었습니다.');
-            showPage('login'); // 로그아웃 후 login 페이지로 이동
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const nickname = userData.nickName;
+                welcomeMessage.textContent = `${nickname}님 환영합니다!`; // 닉네임 업데이트
+            } else {
+                throw new Error('No user document found');
+            }
         } catch (error) {
-            console.error('로그아웃 실패:', error);
-            alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+            console.error('사용자 정보를 가져오는 데 실패했습니다:', error);
+            welcomeMessage.textContent = 'Unknown';
         }
+    } else {
+        header.removeChild(loginAuthBox); // 로그인 상태가 아닐 경우 요소 제거
+    }
+
+    // 로그아웃 버튼 이벤트 리스너
+    logoutButton.addEventListener('click', async () => {
+        await signOut(auth);
+        alert('로그아웃 되었습니다.');
+        showPage('login'); // 로그아웃 후 login 페이지로 이동
     });
 }
 
 // 로그아웃 버튼 제거 함수
 function removeLogoutButton(header) {
-    const logoutButton = header.querySelector('#logoutButton');
-    if (logoutButton) {
-        logoutButton.remove(); // 로그아웃 상태라면 기존 로그아웃 버튼 제거
+    const loginAuthBox = header.querySelector('.loginAuthbox');
+
+    if (loginAuthBox) {
+        loginAuthBox.remove(); // 로그아웃 상태라면 기존 <div> 제거
     }
 }
+
 
 // 링크 클릭 처리 함수
 function handlePageLinkClick(e) {
@@ -222,38 +259,38 @@ async function handleSignUpFormSubmit(event) {
             createdAt: new Date()
         });
 
-        alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
+        alert('Welcome! 환영합니다!');
         showPage('home'); // 회원가입 후 홈 페이지로 이동
     } catch (error) {
         console.error('회원가입 실패:', error.code, error.message);
-        alert('회원가입에 실패했습니다: ' + error.message);
+        alert('회원가입에 실패했습니다');
     }
 }
 
 // 유효성 검사 함수
 function validateSignUpForm(name, email, nickName, password, passwordCheck) {
     if (name.length < 2) {
-        alert('이름은 최소 2자 이상이어야 합니다.');
+        alert('Name must be at least 2 characters long. 이름은 최소 2자 이상이어야 합니다.');
         return false;
     }
 
     if (!validateEmail(email)) {
-        alert('유효한 이메일 주소를 입력해주세요.');
+        alert('Please enter a valid email address. 유효한 이메일 주소를 입력해주세요.');
         return false;
     }
 
-    if (nickName.length < 3) {
-        alert('닉네임은 최소 3자 이상이어야 합니다.');
+    if (nickName.length < 2) {
+        alert('Nickname must be at least 2 characters long. 닉네임은 최소 2자 이상이어야 합니다.');
         return false;
     }
 
     if (password.length < 7) {
-        alert('비밀번호는 최소 7자 이상이어야 합니다.');
+        alert('Password must be at least 7 characters long. 비밀번호는 최소 7자 이상이어야 합니다.');
         return false;
     }
 
     if (password !== passwordCheck) {
-        alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+        alert('Password and confirmation do not match. 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
         return false;
     }
 
@@ -278,12 +315,20 @@ async function handleLoginFormSubmit(event) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        alert('로그인 성공!');
+        // alert('로그인 성공!');
         showPage('home'); // 로그인 후 홈 페이지로 이동
 
     } catch (error) {
         console.error('로그인 실패:', error.code, error.message);
-        alert('로그인에 실패했습니다: ' + error.message);
+
+        // 에러 코드에 따른 처리
+        if (error.code === 'auth/wrong-password' ||
+            error.code === 'auth/user-not-found' ||
+            error.code === 'auth/invalid-login-credentials') {
+            alert('Incorrect email or password.\n 이메일 또는 비밀번호가 잘못되었습니다.');
+        } else {
+            alert('Login failed. Please try again.\n로그인에 실패했습니다. 다시 시도해주세요.');
+        }
     }
 }
 
@@ -423,50 +468,48 @@ function initPostManagement() {
             try {
                 const user = auth.currentUser;
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const nickname = userData.nickName;
+                const userData = userDoc.data();
+                const nickname = userData.nickName;
 
-                    if (isEditing && editingPostId) {
-                        // 기존 게시글 수정 처리
-                        await setDoc(doc(db, 'guestRoomPosts', editingPostId), {
-                            title: title,
-                            content: content,
-                            authorId: user.uid,
-                            authorNickname: nickname
-                        }, { merge: true });
-                        alert('게시글이 수정되었습니다!');
-                    } else {
-                        // 새 게시글 작성 처리
-                        await addDoc(collection(db, 'guestRoomPosts'), {
-                            title: title,
-                            content: content,
-                            authorId: user.uid,
-                            authorNickname: nickname,
-                            createdAt: new Date()
-                        });
-                        alert('게시글이 작성되었습니다!');
-                    }
-
-                    // 폼 초기화
-                    postWriteForm.reset();
-                    isEditing = false;
-                    editingPostId = null;
-
-                    // 작성 후 guestRoom 페이지로 이동
-                    showPage('guestRoom');
+                if (isEditing && editingPostId) {
+                    // 기존 게시글 수정 처리
+                    await setDoc(doc(db, 'guestRoomPosts', editingPostId), {
+                        title: title,
+                        content: content,
+                        authorId: user.uid,
+                        authorNickname: nickname
+                    }, { merge: true });
+                    alert('게시글이 수정되었습니다!');
                 } else {
-                    alert('사용자 정보가 없습니다.');
+                    // 새 게시글 작성 처리
+                    await addDoc(collection(db, 'guestRoomPosts'), {
+                        title: title,
+                        content: content,
+                        authorId: user.uid,
+                        authorNickname: nickname,
+                        createdAt: new Date()
+                    });
+                    // alert('게시글이 작성되었습니다!');
                 }
+
+                // 폼 초기화
+                postWriteForm.reset();
+                isEditing = false;
+                editingPostId = null;
+
+                // 작성 후 guestRoom 페이지로 이동
+                showPage('guestRoom');
+
             } catch (error) {
                 console.error('게시글 작성 실패:', error);
-                alert('게시글 작성에 실패했습니다.');
+                alert('Failed to create post.\n게시글 작성에 실패했습니다.');
             }
+
         });
 
         // '취소하기' 버튼 클릭 시 폼 초기화 및 페이지 이동
         postWriteCancelBtn.addEventListener('click', function () {
-            if (confirm('작성 중인 내용을 취소하시겠습니까?')) {
+            if (confirm('Are you sure you want to cancel your current changes?\n작성 중인 내용을 취소하시겠습니까?')) {
                 postWriteForm.reset(); // 폼 초기화
                 isEditing = false;
                 editingPostId = null;
@@ -487,7 +530,7 @@ function enableEditMode(postId) {
 
 // 게시글 삭제 함수
 async function handleDeleteButtonClick(postId) {
-    if (confirm('이 게시글을 삭제하시겠습니까?')) {
+    if (confirm('Are you sure you want to delete this post?\n이 게시글을 삭제하시겠습니까?')) {
         try {
             // Firestore의 실시간 업데이트 리스너 제거
             if (unsubscribeFromPostDetail) {
@@ -496,13 +539,13 @@ async function handleDeleteButtonClick(postId) {
             }
 
             await deleteDoc(doc(db, 'guestRoomPosts', postId));
-            alert('게시글이 삭제되었습니다.');
+            // alert('게시글이 삭제되었습니다.');
 
             // 삭제 후 바로 guestRoom 페이지로 이동
             showPage('guestRoom');
         } catch (error) {
             console.error('게시글 삭제 실패:', error);
-            alert('게시글 삭제에 실패했습니다.');
+            alert('delete fail post.\n게시글 삭제에 실패했습니다.');
         }
     }
 }
@@ -538,7 +581,7 @@ async function loadPostDetail(postId, isEditMode = false) {
         });
     } catch (error) {
         console.error('게시글 로드 중 오류 발생:', error);
-        alert('게시글을 로드하는 데 실패했습니다.');
+        alert('Failed to load the post.\n게시글을 로드하는 데 실패했습니다.');
     }
 }
 
@@ -564,7 +607,9 @@ function fillPostDetailPage(postData) {
 
     // 작성자 확인 및 버튼 표시 처리
     const user = auth.currentUser;
-    if (user && postData.authorId === user.uid) {
+    const isAdmin = user && user.uid === 'P8u3wTp1IDSCRfn4nfmF0VA1xOG2'; // 관리자 UID를 설정
+    // 작성자 또는 관리자인 경우 버튼 표시
+    if (user && (postData.authorId === user.uid || isAdmin)) {
         document.querySelector('.postContentAction').style.display = 'flex';
         document.getElementById('editPostButton').onclick = () => enableEditMode(currentPostId);
         document.getElementById('deletePostButton').onclick = () => handleDeleteButtonClick(currentPostId);
@@ -608,41 +653,33 @@ async function submitComment() {
     const postId = document.querySelector('.commentList').getAttribute('data-post-id');
 
     if (!commentText) {
-        alert('댓글을 입력해주세요.');
+        alert('Add comment. \n댓글을 입력해주세요.');
         return;
     }
 
     const user = auth.currentUser;
 
-    if (user) {
-        try {
-            // Firestore에서 사용자 닉네임 가져오기
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const nickname = userData.nickName;  // 사용자의 닉네임을 가져옴
+    try {
+        // Firestore에서 사용자 닉네임 가져오기
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userData = userDoc.data();
+        const nickname = userData.nickName;  // 사용자의 닉네임을 가져옴
 
-                // 댓글 Firestore에 추가
-                await addDoc(collection(db, 'comments'), {
-                    postId: postId,  // 댓글이 속한 게시물의 ID 저장
-                    text: commentText,
-                    authorId: user.uid,
-                    authorNickname: nickname,  // 닉네임 저장
-                    createdAt: new Date()
-                });
+        // 댓글 Firestore에 추가
+        await addDoc(collection(db, 'comments'), {
+            postId: postId,  // 댓글이 속한 게시물의 ID 저장
+            text: commentText,
+            authorId: user.uid,
+            authorNickname: nickname,  // 닉네임 저장
+            createdAt: new Date()
+        });
 
-                commentInput.value = '';  // 댓글 입력창 초기화
-                loadComments(postId);  // 댓글 다시 로드
-            } else {
-                console.error('사용자 문서를 찾을 수 없습니다.');
-                alert('댓글 작성에 실패했습니다. 사용자 정보를 찾을 수 없습니다.');
-            }
-        } catch (error) {
-            console.error('댓글 작성 실패:', error);
-            alert('댓글 작성에 실패했습니다.');
-        }
-    } else {
-        alert('로그인 후 댓글을 작성하실 수 있습니다.');
+        commentInput.value = '';  // 댓글 입력창 초기화
+        loadComments(postId);  // 댓글 다시 로드
+
+    } catch (error) {
+        console.error('Failed to post comment:', error);
+        alert('Failed to post comment.\n댓글 작성에 실패했습니다.');
     }
 }
 
@@ -673,9 +710,11 @@ async function loadComments(postId) {
         `;
 
         const user = auth.currentUser;
-        if (user && user.uid === commentData.authorId) {
+        const isAdmin = user && user.uid === 'P8u3wTp1IDSCRfn4nfmF0VA1xOG2'; // 관리자 UID를 설정
+        if (user && (user.uid === commentData.authorId || isAdmin)) {
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = '삭제';
+            deleteButton.textContent = 'delete comment';
+            deleteButton.classList.add('commentDeleteButton');
             deleteButton.addEventListener('click', () => deleteComment(doc.id, postId));
             commentItem.appendChild(deleteButton);
         }
@@ -685,15 +724,13 @@ async function loadComments(postId) {
 }
 
 async function deleteComment(commentId, postId) {
-    if (confirm('이 댓글을 삭제하시겠습니까?')) {
-        try {
-            await deleteDoc(doc(db, 'comments', commentId));
-            alert('댓글이 삭제되었습니다.');
-            loadComments(postId);  // 댓글 다시 로드
-        } catch (error) {
-            console.error('댓글 삭제 실패:', error);
-            alert('댓글 삭제에 실패했습니다.');
-        }
+    try {
+        await deleteDoc(doc(db, 'comments', commentId));
+        // alert('댓글이 삭제되었습니다.');  // 댓글 삭제 완료 메시지
+        loadComments(postId);  // 댓글 다시 로드
+    } catch (error) {
+        console.error('Failed to delete comment:', error);
+        alert('Failed to delete comment.\n댓글 삭제에 실패했습니다.');
     }
 }
 
@@ -710,3 +747,42 @@ function listenForCommentUpdates(postId) {
         commentCountElement.textContent = snapshot.size;
     });
 }
+
+// contact Firestore에 데이터 저장하는 함수
+async function saveContactFormData(email, name, message) {
+    try {
+        const docRef = await addDoc(collection(db, 'contactMessages'), {
+            email: email,
+            name: name,
+            message: message,
+            createdAt: new Date()
+        });
+        console.log('Document written with ID: ', docRef.id);
+        alert('Your message has been sent!');
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        alert('There was an error sending your message. Please try again.');
+    }
+}
+
+// contact 폼 제출 이벤트 처리
+document.getElementById('contactForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // 폼 제출 기본 동작 방지
+
+    // 입력된 데이터 수집
+    const email = document.getElementById('contactEmail').value.trim();
+    const name = document.getElementById('contactName').value.trim();
+    const message = document.getElementById('contactMessage').value.trim();
+
+    if (!email || !name || !message) {
+        alert('All fields are required.');
+        return;
+    }
+
+    // 데이터베이스에 저장
+    await saveContactFormData(email, name, message);
+
+    // 폼 초기화
+    document.getElementById('contactForm').reset();
+});
+
